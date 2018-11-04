@@ -4,7 +4,27 @@
 
 ## 原理
 
-通过js创建dom，并将属性赋值给dom。
+通过js创建dom，并将属性、数据、样式和事件赋值给dom。
+
+xtype.js并未实现任何属性或事件，仅提供xtype和控件实例管理。
+
+## API
+
+`UI`：用于xtype注册、控件的创建和管理。
+
+`UI.addXType(name, cls)`：将控件类型注册为xtype，例如`UI.addXType('html', Html)`。
+
+`UI.removeXType(name)`：移除控件xtype。
+
+`UI.getXType(name)`：通过xtype获取控件类型
+
+`UI.add(id, obj, scope = "global");`：添加控件实例，global是命名空间。
+
+`UI.remove(id, scope = 'global');`：移除控件实例。
+
+`UI.get(id, scope = 'global')`：通过id和命名空间获取控件实例。
+
+`UI.create(config)`：通过json对象创建页面，json中的元素可以是带xtype的对象或控件实例。xtype必须事先注册。
 
 ## 示例
 
