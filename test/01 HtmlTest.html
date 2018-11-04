@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+
+<html lang="zh-cn">
+
+<head>
+    <meta charset="utf-8">
+    <title>01 HtmlTest</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+</head>
+
+<body>
+    <script src="../dist/XType.js"></script>
+    <script>
+        function Div(options = {}) {
+            XType.Control.call(this, options);
+        }
+
+        Div.prototype = Object.create(XType.Control.prototype);
+        Div.prototype.constructor = Div;
+
+        Div.prototype.render = function () {
+            this.dom = document.createElement('div');
+
+            this.parent.appendChild(this.dom);
+
+            if (this.attr) {
+                Object.keys(this.attr).forEach(n => {
+                    this.dom.setAttribute(n, this.attr[n]);
+                });
+            }
+
+            if (this.data) {
+                Object.assign(this.dom, this.data);
+            }
+
+            if (this.style) {
+                Object.assign(this.dom.style, this.style);
+            }
+
+            if (this.listeners) {
+                Object.assign(this.dom, this.listeners);
+            }
+
+            this.children.forEach(n => {
+                var control = UI.create(n);
+                control.parent = this.dom;
+                control.render();
+            });
+        };
+
+        UI.addXType('div', Div);
+
+        var control = UI.create({
+            xtype: 'div',
+            id: 'div1',
+            parent: document.body,
+            style: {
+                width: '100px',
+                height: '100px',
+                backgroundColor: '#f00'
+            },
+            listeners: {
+                onclick: () => {
+                    alert('You clicked!');
+                }
+            }
+        });
+
+        control.render();
+    </script>
+</body>
+
+</html>

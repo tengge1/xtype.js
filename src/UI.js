@@ -88,7 +88,7 @@ UICls.prototype.get = function (id, scope = 'global') {
  * @param {*} config xtype配置
  */
 UICls.prototype.create = function (config) {
-    if (config instanceof SvgControl) { // config是SvgControl实例
+    if (config instanceof Control) { // config是Control实例
         return config;
     }
 

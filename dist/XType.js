@@ -238,7 +238,7 @@
 	 * @param {*} config xtype配置
 	 */
 	UICls.prototype.create = function (config) {
-	    if (config instanceof SvgControl) { // config是SvgControl实例
+	    if (config instanceof Control) { // config是Control实例
 	        return config;
 	    }
 
@@ -266,6 +266,7 @@
 
 	window.UI = UI$1;
 
+	exports.Control = Control;
 	exports.UI = UI$1;
 
 	Object.defineProperty(exports, '__esModule', { value: true });
