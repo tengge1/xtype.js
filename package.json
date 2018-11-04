@@ -1,0 +1,29 @@
+{
+    "name": "xtype.js",
+    "version": "1.0.0",
+    "description": "",
+    "dependencies": {},
+    "devDependencies": {
+        "rollup": "^0.59.2"
+    },
+    "scripts": {
+        "build": "rollup -c",
+        "clear": "npm prune"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+ssh://git@github.com/tengge1/xtype.js.git"
+    },
+    "keywords": [
+        "rrogressive",
+        "framework",
+        "vue",
+        "react"
+    ],
+    "author": "tengge",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/tengge1/xtype.js/issues"
+    },
+    "homepage": "https://github.com/tengge1/xtype.js"
+}
