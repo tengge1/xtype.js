@@ -28,6 +28,8 @@ xtype.js并未实现任何属性或事件，仅提供xtype和控件实例管理�
 
 ## 示例
 
+**html示例**
+
 ```javascript
 // 自定义控件
 function Div(options = {}) {
@@ -92,6 +94,112 @@ var control = UI.create({
     }
 });
 control.render();
+```
+
+**svg示例**
+
+```javascript
+// SVG文档
+function SvgDom(options = {}) {
+    XType.Control.call(this, options);
+}
+
+SvgDom.prototype = Object.create(XType.Control.prototype);
+SvgDom.prototype.constructor = SvgDom;
+
+SvgDom.prototype.render = function () {
+    this.dom = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+
+    if (this.attr) {
+        Object.keys(this.attr).forEach(n => {
+            this.dom.setAttribute(n, this.attr[n]);
+        });
+    }
+
+    if (this.data) {
+        Object.assign(this.dom, this.data);
+    }
+
+    if (this.style) {
+        Object.assign(this.dom.style, this.style);
+    }
+
+    if (this.listeners) {
+        Object.assign(this.dom, this.listeners);
+    }
+
+    this.children.forEach(n => {
+        var obj = UI.create(n);
+        obj.parent = this.dom;
+        obj.render();
+    });
+
+    this.parent.appendChild(this.dom);
+};
+
+UI.addXType('dom', SvgDom);
+
+// SVG圆
+function SvgCircle(options = {}) {
+    XType.Control.call(this, options);
+}
+
+SvgCircle.prototype = Object.create(XType.Control.prototype);
+SvgCircle.prototype.constructor = SvgCircle;
+
+SvgCircle.prototype.render = function () {
+    this.dom = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+
+    if (this.attr) {
+        Object.keys(this.attr).forEach(n => {
+            this.dom.setAttribute(n, this.attr[n]);
+        });
+    }
+
+    if (this.data) {
+        Object.assign(this.dom, this.data);
+    }
+
+    if (this.style) {
+        Object.assign(this.dom.style, this.style);
+    }
+
+    if (this.listeners) {
+        Object.assign(this.dom, this.listeners);
+    }
+
+    this.parent.appendChild(this.dom);
+};
+
+UI.addXType('circle', SvgCircle);
+
+// 渲染svg文档
+var dom = UI.create({
+    xtype: 'dom',
+    id: 'dom1',
+    attr: {
+        width: 800,
+        height: 600,
+    },
+    parent: document.body,
+    children: [{
+        xtype: 'circle',
+        attr: {
+            cx: 100,
+            cy: 100,
+            r: 40,
+            fill: '#f00',
+            stroke: '#000',
+            'stroke-width': 2
+        },
+        listeners: {
+            onclick: () => {
+                alert('You clicked');
+            }
+        }
+    }]
+});
+dom.render();
 ```
 
 ## 链接

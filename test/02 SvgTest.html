@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+
+<html lang="zh-cn">
+
+<head>
+    <meta charset="utf-8">
+    <title>01 HtmlTest</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+</head>
+
+<body>
+    <script src="../dist/XType.js"></script>
+    <script>
+        // SVG文档
+        function SvgDom(options = {}) {
+            XType.Control.call(this, options);
+        }
+
+        SvgDom.prototype = Object.create(XType.Control.prototype);
+        SvgDom.prototype.constructor = SvgDom;
+
+        SvgDom.prototype.render = function () {
+            this.dom = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+
+            if (this.attr) {
+                Object.keys(this.attr).forEach(n => {
+                    this.dom.setAttribute(n, this.attr[n]);
+                });
+            }
+
+            if (this.data) {
+                Object.assign(this.dom, this.data);
+            }
+
+            if (this.style) {
+                Object.assign(this.dom.style, this.style);
+            }
+
+            if (this.listeners) {
+                Object.assign(this.dom, this.listeners);
+            }
+
+            this.children.forEach(n => {
+                var obj = UI.create(n);
+                obj.parent = this.dom;
+                obj.render();
+            });
+
+            this.parent.appendChild(this.dom);
+        };
+
+        UI.addXType('dom', SvgDom);
+
+        // SVG圆
+        function SvgCircle(options = {}) {
+            XType.Control.call(this, options);
+        }
+
+        SvgCircle.prototype = Object.create(XType.Control.prototype);
+        SvgCircle.prototype.constructor = SvgCircle;
+
+        SvgCircle.prototype.render = function () {
+            this.dom = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+
+            if (this.attr) {
+                Object.keys(this.attr).forEach(n => {
+                    this.dom.setAttribute(n, this.attr[n]);
+                });
+            }
+
+            if (this.data) {
+                Object.assign(this.dom, this.data);
+            }
+
+            if (this.style) {
+                Object.assign(this.dom.style, this.style);
+            }
+
+            if (this.listeners) {
+                Object.assign(this.dom, this.listeners);
+            }
+
+            this.parent.appendChild(this.dom);
+        };
+
+        UI.addXType('circle', SvgCircle);
+
+        // 渲染svg文档
+        var dom = UI.create({
+            xtype: 'dom',
+            id: 'dom1',
+            attr: {
+                width: 800,
+                height: 600,
+            },
+            parent: document.body,
+            children: [{
+                xtype: 'circle',
+                attr: {
+                    cx: 100,
+                    cy: 100,
+                    r: 40,
+                    fill: '#f00',
+                    stroke: '#000',
+                    'stroke-width': 2
+                },
+                listeners: {
+                    onclick: () => {
+                        alert('You clicked');
+                    }
+                }
+            }]
+        });
+
+        dom.render();
+    </script>
+</body>
+
+</html>
