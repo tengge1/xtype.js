@@ -1,6 +1,6 @@
 {
     "name": "@tengge1/xtype.js",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "",
     "dependencies": {},
     "devDependencies": {
@@ -15,10 +15,12 @@
         "url": "git+ssh://git@github.com/tengge1/xtype.js.git"
     },
     "keywords": [
-        "rrogressive",
+        "progressive",
         "framework",
         "vue",
-        "react"
+        "react",
+        "ui",
+        "svg"
     ],
     "author": "tengge",
     "license": "MIT",
