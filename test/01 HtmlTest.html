@@ -20,56 +20,8 @@
         Div.prototype.constructor = Div;
 
         Div.prototype.render = function () {
-            // 通过createElement或createElementNS创建dom或svg
-            this.dom = document.createElement('div');
-            this.parent.appendChild(this.dom);
-
-            // 属性，通过setAttribute给节点赋值
-            if (this.attr) {
-                Object.keys(this.attr).forEach(n => {
-                    this.dom.setAttribute(n, this.attr[n]);
-                });
-            }
-
-            // class属性
-            if (this.cls) {
-                this.dom.className = this.cls;
-            }
-
-            // 数据，直接赋值给dom
-            if (this.data) {
-                Object.assign(this.dom, this.data);
-            }
-
-            // 样式，赋值给dom.style
-            if (this.style) {
-                Object.assign(this.dom.style, this.style);
-            }
-
-            // 监听器，赋值给dom
-            if (this.listeners) {
-                Object.keys(this.listeners).forEach(n => {
-                    this.dom['on' + n] = this.listeners[n];
-                });
-            }
-
-            // 自定义数据，赋值给dom.userData
-            if (this.userData) {
-                this.dom.userData = {};
-                Object.assign(this.dom.userData, this.userData);
-            }
-
-            // innerHTML属性
-            if (this.html) {
-                this.dom.innerHTML = this.html;
-            }
-
-            // 渲染子节点
-            this.children.forEach(n => {
-                var control = UI.create(n);
-                control.parent = this.dom;
-                control.render();
-            });
+            var dom = document.createElement('div');
+            this.renderDom(dom);
         };
 
         // 注册xtype

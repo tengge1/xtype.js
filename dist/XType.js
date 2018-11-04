@@ -26,7 +26,7 @@
 	    this.listeners = options.listeners || null; // 监听器
 	    this.userData = options.userData || null; // 自定义数据
 
-	    UI.add(this._id, this, this._scope);
+	    window.UI.add(this._id, this, this._scope);
 	}
 
 	Object.defineProperties(Control.prototype, {
@@ -90,9 +90,65 @@
 	 */
 	Control.prototype.render = function () {
 	    this.children.forEach(n => {
-	        var obj = UI.create(n);
+	        var obj = window.UI.create(n);
 	        obj.parent = this.parent;
 	        obj.render();
+	    });
+	};
+
+	/**
+	 * 渲染dom，将dom添加到父dom并给dom赋值，然后循环渲染子dom
+	 * @param {*} dom 
+	 */
+	Control.prototype.renderDom = function (dom) {
+	    this.dom = dom;
+	    this.parent.appendChild(this.dom);
+
+	    // 属性，通过setAttribute给节点赋值
+	    if (this.attr) {
+	        Object.keys(this.attr).forEach(n => {
+	            this.dom.setAttribute(n, this.attr[n]);
+	        });
+	    }
+
+	    // class属性
+	    if (this.cls) {
+	        this.dom.className = this.cls;
+	    }
+
+	    // 数据，直接赋值给dom
+	    if (this.data) {
+	        Object.assign(this.dom, this.data);
+	    }
+
+	    // 样式，赋值给dom.style
+	    if (this.style) {
+	        Object.assign(this.dom.style, this.style);
+	    }
+
+	    // 监听器，赋值给dom
+	    if (this.listeners) {
+	        Object.keys(this.listeners).forEach(n => {
+	            this.dom['on' + n] = this.listeners[n];
+	        });
+	    }
+
+	    // 自定义数据，赋值给dom.userData
+	    if (this.userData) {
+	        this.dom.userData = {};
+	        Object.assign(this.dom.userData, this.userData);
+	    }
+
+	    // innerHTML属性
+	    if (this.html) {
+	        this.dom.innerHTML = this.html;
+	    }
+
+	    // 渲染子节点
+	    this.children.forEach(n => {
+	        var control = window.UI.create(n);
+	        control.parent = this.dom;
+	        control.render();
 	    });
 	};
 
@@ -107,7 +163,7 @@
 
 	        items.forEach(n => {
 	            if (n.id) {
-	                UI.remove(n.id, n.scope);
+	                window.UI.remove(n.id, n.scope);
 	            }
 	            if (n.listeners) {
 	                Object.keys(n.listeners).forEach(m => {
@@ -144,7 +200,7 @@
 	        this.parent = null;
 	    }
 	    if (this.id) {
-	        UI.remove(this._id, this._scope);
+	        window.UI.remove(this._id, this._scope);
 	    }
 	};
 
@@ -260,12 +316,12 @@
 	/**
 	 * UICls
 	 */
-	const UI$1 = new UICls();
+	const UI = new UICls();
 
-	window.UI = UI$1;
+	window.UI = UI;
 
 	exports.Control = Control;
-	exports.UI = UI$1;
+	exports.UI = UI;
 
 	Object.defineProperty(exports, '__esModule', { value: true });
 

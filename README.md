@@ -59,6 +59,77 @@ UI.addXType('customxtype', CustomControl);
 * listeners: 监听器，使用`Object.assign`给`dom`赋值，前面不带`on`。
 * userData: 自定义数据，使用`Object.assign`给`dom.userData`赋值。
 
+**渲染dom帮助函数**
+
+xtype.js提供了渲染dom帮助函数，方便渲染函数编写。
+
+```javascript
+/**
+ * 渲染dom，将dom添加到父dom并给dom赋值，然后循环渲染子dom
+ * @param {*} dom 
+ */
+Control.prototype.renderDom = function (dom) {
+    this.dom = dom;
+    this.parent.appendChild(this.dom);
+
+    // 属性，通过setAttribute给节点赋值
+    if (this.attr) {
+        Object.keys(this.attr).forEach(n => {
+            this.dom.setAttribute(n, this.attr[n]);
+        });
+    }
+
+    // class属性
+    if (this.cls) {
+        this.dom.className = this.cls;
+    }
+
+    // 数据，直接赋值给dom
+    if (this.data) {
+        Object.assign(this.dom, this.data);
+    }
+
+    // 样式，赋值给dom.style
+    if (this.style) {
+        Object.assign(this.dom.style, this.style);
+    }
+
+    // 监听器，赋值给dom
+    if (this.listeners) {
+        Object.keys(this.listeners).forEach(n => {
+            this.dom['on' + n] = this.listeners[n];
+        });
+    }
+
+    // 自定义数据，赋值给dom.userData
+    if (this.userData) {
+        this.dom.userData = {};
+        Object.assign(this.dom.userData, this.userData);
+    }
+
+    // innerHTML属性
+    if (this.html) {
+        this.dom.innerHTML = this.html;
+    }
+
+    // 渲染子节点
+    this.children.forEach(n => {
+        var control = window.UI.create(n);
+        control.parent = this.dom;
+        control.render();
+    });
+};
+```
+
+自定义控件的渲染函数通常可写作：
+
+```javascript
+CustomControl.prototype.render = function () {
+    var dom = document.createElement('div'); // div可以换成任何tag
+    this.renderDom(dom);
+};
+```
+
 ### XType.UI
 
 `UI`：用于xtype注册、控件的创建和管理。
@@ -91,56 +162,8 @@ Div.prototype = Object.create(XType.Control.prototype);
 Div.prototype.constructor = Div;
 
 Div.prototype.render = function () {
-    // 通过createElement或createElementNS创建dom或svg
-    this.dom = document.createElement('div');
-    this.parent.appendChild(this.dom);
-
-    // 属性，通过setAttribute给节点赋值
-    if (this.attr) {
-        Object.keys(this.attr).forEach(n => {
-            this.dom.setAttribute(n, this.attr[n]);
-        });
-    }
-
-    // class属性
-    if(this.cls) {
-        this.dom.className = this.cls;
-    }
-
-    // 数据，直接赋值给dom
-    if (this.data) {
-        Object.assign(this.dom, this.data);
-    }
-
-    // 样式，赋值给dom.style
-    if (this.style) {
-        Object.assign(this.dom.style, this.style);
-    }
-
-    // 监听器，赋值给dom
-    if (this.listeners) {
-        Object.keys(this.listeners).forEach(n => {
-            this.dom['on' + n] = this.listeners[n];
-        });
-    }
-
-    // 自定义数据，赋值给dom.userData
-    if(this.userData) {
-        this.dom.userData = {};
-        Object.assign(this.dom.userData, this.userData);
-    }
-
-    // innerHTML属性
-    if(this.html) {
-        this.dom.innerHTML = this.html;
-    }
-
-    // 渲染子节点
-    this.children.forEach(n => {
-        var control = UI.create(n);
-        control.parent = this.dom;
-        control.render();
-    });
+    var dom = document.createElement('div');
+    this.renderDom(dom);
 };
 
 // 注册xtype
@@ -177,44 +200,8 @@ SvgDom.prototype = Object.create(XType.Control.prototype);
 SvgDom.prototype.constructor = SvgDom;
 
 SvgDom.prototype.render = function () {
-    this.dom = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-
-    if (this.attr) {
-        Object.keys(this.attr).forEach(n => {
-            this.dom.setAttribute(n, this.attr[n]);
-        });
-    }
-
-    if(this.cls) {
-        this.dom.className = this.cls;
-    }
-
-    if (this.data) {
-        Object.assign(this.dom, this.data);
-    }
-
-    if (this.style) {
-        Object.assign(this.dom.style, this.style);
-    }
-
-    if (this.listeners) {
-        Object.keys(this.listeners).forEach(n => {
-            this.dom['on' + n] = this.listeners[n];
-        });
-    }
-
-    if(this.userData) {
-        this.dom.userData = {};
-        Object.assign(this.dom.userData, this.userData);
-    }
-
-    this.children.forEach(n => {
-        var obj = UI.create(n);
-        obj.parent = this.dom;
-        obj.render();
-    });
-
-    this.parent.appendChild(this.dom);
+    var dom = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    this.renderDom(dom);
 };
 
 UI.addXType('dom', SvgDom);
@@ -228,38 +215,8 @@ SvgCircle.prototype = Object.create(XType.Control.prototype);
 SvgCircle.prototype.constructor = SvgCircle;
 
 SvgCircle.prototype.render = function () {
-    this.dom = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-
-    if (this.attr) {
-        Object.keys(this.attr).forEach(n => {
-            this.dom.setAttribute(n, this.attr[n]);
-        });
-    }
-
-    if(this.cls) {
-        this.dom.className = this.cls;
-    }
-
-    if (this.data) {
-        Object.assign(this.dom, this.data);
-    }
-
-    if (this.style) {
-        Object.assign(this.dom.style, this.style);
-    }
-
-    if (this.listeners) {
-        Object.keys(this.listeners).forEach(n => {
-            this.dom['on' + n] = this.listeners[n];
-        });
-    }
-
-    if(this.userData) {
-        this.dom.userData = {};
-        Object.assign(this.dom.userData, this.userData);
-    }
-
-    this.parent.appendChild(this.dom);
+    var dom = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    this.renderDom(dom);
 };
 
 UI.addXType('circle', SvgCircle);

@@ -20,44 +20,8 @@
         SvgDom.prototype.constructor = SvgDom;
 
         SvgDom.prototype.render = function () {
-            this.dom = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-
-            if (this.attr) {
-                Object.keys(this.attr).forEach(n => {
-                    this.dom.setAttribute(n, this.attr[n]);
-                });
-            }
-
-            if (this.cls) {
-                this.dom.className = this.cls;
-            }
-
-            if (this.data) {
-                Object.assign(this.dom, this.data);
-            }
-
-            if (this.style) {
-                Object.assign(this.dom.style, this.style);
-            }
-
-            if (this.listeners) {
-                Object.keys(this.listeners).forEach(n => {
-                    this.dom['on' + n] = this.listeners[n];
-                });
-            }
-
-            if (this.userData) {
-                this.dom.userData = {};
-                Object.assign(this.dom.userData, this.userData);
-            }
-
-            this.children.forEach(n => {
-                var obj = UI.create(n);
-                obj.parent = this.dom;
-                obj.render();
-            });
-
-            this.parent.appendChild(this.dom);
+            var dom = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            this.renderDom(dom);
         };
 
         UI.addXType('dom', SvgDom);
@@ -71,38 +35,8 @@
         SvgCircle.prototype.constructor = SvgCircle;
 
         SvgCircle.prototype.render = function () {
-            this.dom = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-
-            if (this.attr) {
-                Object.keys(this.attr).forEach(n => {
-                    this.dom.setAttribute(n, this.attr[n]);
-                });
-            }
-
-            if (this.cls) {
-                this.dom.className = this.cls;
-            }
-
-            if (this.data) {
-                Object.assign(this.dom, this.data);
-            }
-
-            if (this.style) {
-                Object.assign(this.dom.style, this.style);
-            }
-
-            if (this.listeners) {
-                Object.keys(this.listeners).forEach(n => {
-                    this.dom['on' + n] = this.listeners[n];
-                });
-            }
-
-            if (this.userData) {
-                this.dom.userData = {};
-                Object.assign(this.dom.userData, this.userData);
-            }
-
-            this.parent.appendChild(this.dom);
+            var dom = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            this.renderDom(dom);
         };
 
         UI.addXType('circle', SvgCircle);
