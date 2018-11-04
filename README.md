@@ -8,6 +8,18 @@
 
 xtype.js并未实现任何属性或事件，仅提供xtype和控件实例管理。
 
+## 安装
+
+通过npm，
+
+```bash
+npm install @tengge1/xtype.js
+```
+
+直接下载，
+
+[XType.js](dist/XType.js)
+
 ## API
 
 `UI`：用于xtype注册、控件的创建和管理。
