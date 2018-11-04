@@ -11,13 +11,16 @@ function Control(options = {}) {
     this._scope = options.scope || 'global';
 
     this.children = options.children || [];
+    this.html = options.html || null;
 
-    this.attr = options.attr || null;
-    this.data = options.data || null;
-    this.style = options.style || null;
-    this.listeners = options.listeners || null;
+    this.attr = options.attr || null; // 控件属性
+    this.cls = options.cls || null; // class属性
+    this.data = options.data || null; // 控件数据
+    this.style = options.style || null; // 控件样式
+    this.listeners = options.listeners || null; // 监听器
+    this.userData = options.userData || null; // 自定义数据
 
-    UI.add(this.id, this, this.scope);
+    UI.add(this._id, this, this._scope);
 }
 
 Object.defineProperties(Control.prototype, {
@@ -53,10 +56,6 @@ Object.defineProperties(Control.prototype, {
  * @param {*} obj 
  */
 Control.prototype.add = function (obj) {
-    if (!(obj instanceof Control)) {
-        console.warn('Control: obj is not an instance of Control.');
-        return;
-    }
     this.children.push(obj);
 };
 
@@ -66,10 +65,6 @@ Control.prototype.add = function (obj) {
  * @param {*} obj 
  */
 Control.prototype.insert = function (index, obj) {
-    if (!(obj instanceof Control)) {
-        console.warn('Control: obj is not an instance of Control.');
-        return;
-    }
     this.children.splice(index, 0, obj);
 };
 
@@ -96,7 +91,7 @@ Control.prototype.render = function () {
 };
 
 /**
- * 清空控件
+ * 清空控件（可调用render函数重新渲染）
  */
 Control.prototype.clear = function () {
     (function remove(items) {
@@ -106,12 +101,12 @@ Control.prototype.clear = function () {
 
         items.forEach(n => {
             if (n.id) {
-                UI.remove(n.id, n.scope == null ? 'global' : n.scope);
+                UI.remove(n.id, n.scope);
             }
             if (n.listeners) {
                 Object.keys(n.listeners).forEach(m => {
                     if (n.dom) {
-                        n.dom[m] = null;
+                        n.dom['on' + m] = null;
                     }
                 });
             }
@@ -126,7 +121,7 @@ Control.prototype.clear = function () {
 
         if (this.listeners) {
             this.listeners.forEach(n => {
-                this.dom[n] = null;
+                this.dom['on' + n] = null;
             });
         }
 
@@ -139,8 +134,11 @@ Control.prototype.clear = function () {
  */
 Control.prototype.destroy = function () {
     this.clear();
+    if (this.parent) {
+        this.parent = null;
+    }
     if (this.id) {
-        UI.remove(this.id, this.scope == null ? 'global' : this.scope);
+        UI.remove(this._id, this._scope);
     }
 };
 

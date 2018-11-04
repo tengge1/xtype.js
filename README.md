@@ -1,6 +1,6 @@
 # xtype.js
 
-渐进式开发框架xtype.js，使用js替代html，对svg同样适用。
+渐进式开发框架xtype.js，使用js代替html，对svg同样适用。
 
 ## 原理
 
@@ -21,6 +21,45 @@ npm install @tengge1/xtype.js
 [XType.js](dist/XType.js)
 
 ## API
+
+### XType.Control
+
+控件基类，所有其他控件都应该继承该类。
+
+**使用方法：**
+
+```javascript
+// 自定义控件
+function CustomControl(options = {}) {
+    XType.Control.call(this, options);
+}
+
+CustomControl.prototype = Object.create(XType.Control.prototype);
+CustomControl.prototype.constructor = CustomControl;
+
+CustomControl.prototype.render = function () {
+    // 自定义渲染函数
+};
+
+// 注册xtype
+UI.addXType('customxtype', CustomControl);
+```
+
+**options参数**
+
+* id: 自定义id，不可更改，可选。
+* scope: 命名空间，不可更改，可选。
+* parent: 父控件`dom`，默认`document.body`。
+* children: 子元素列表。子元素可为xtype对象或控件。
+* html: `dom`的`innerHTML`属性。如果同时存在`children`属性，优先使用`children`。
+* attr: 属性，通过`setAttribute`给`dom`赋值。
+* cls: `dom`的`class`属性。
+* data: `dom`数据，通过`Object.assign`给`dom`赋值。
+* style: `dom`样式，使用`Object.assign`给`dom.style`赋值。
+* listeners: 监听器，使用`Object.assign`给`dom`赋值，前面不带`on`。
+* userData: 自定义数据，使用`Object.assign`给`dom.userData`赋值。
+
+### XType.UI
 
 `UI`：用于xtype注册、控件的创建和管理。
 
@@ -63,6 +102,11 @@ Div.prototype.render = function () {
         });
     }
 
+    // class属性
+    if(this.cls) {
+        this.dom.className = this.cls;
+    }
+
     // 数据，直接赋值给dom
     if (this.data) {
         Object.assign(this.dom, this.data);
@@ -75,7 +119,20 @@ Div.prototype.render = function () {
 
     // 监听器，赋值给dom
     if (this.listeners) {
-        Object.assign(this.dom, this.listeners);
+        Object.keys(this.listeners).forEach(n => {
+            this.dom['on' + n] = this.listeners[n];
+        });
+    }
+
+    // 自定义数据，赋值给dom.userData
+    if(this.userData) {
+        this.dom.userData = {};
+        Object.assign(this.dom.userData, this.userData);
+    }
+
+    // innerHTML属性
+    if(this.html) {
+        this.dom.innerHTML = this.html;
     }
 
     // 渲染子节点
@@ -100,7 +157,7 @@ var control = UI.create({
         backgroundColor: '#f00'
     },
     listeners: {
-        onclick: () => {
+        click: () => {
             alert('You clicked!');
         }
     }
@@ -128,6 +185,10 @@ SvgDom.prototype.render = function () {
         });
     }
 
+    if(this.cls) {
+        this.dom.className = this.cls;
+    }
+
     if (this.data) {
         Object.assign(this.dom, this.data);
     }
@@ -137,7 +198,14 @@ SvgDom.prototype.render = function () {
     }
 
     if (this.listeners) {
-        Object.assign(this.dom, this.listeners);
+        Object.keys(this.listeners).forEach(n => {
+            this.dom['on' + n] = this.listeners[n];
+        });
+    }
+
+    if(this.userData) {
+        this.dom.userData = {};
+        Object.assign(this.dom.userData, this.userData);
     }
 
     this.children.forEach(n => {
@@ -168,6 +236,10 @@ SvgCircle.prototype.render = function () {
         });
     }
 
+    if(this.cls) {
+        this.dom.className = this.cls;
+    }
+
     if (this.data) {
         Object.assign(this.dom, this.data);
     }
@@ -177,7 +249,14 @@ SvgCircle.prototype.render = function () {
     }
 
     if (this.listeners) {
-        Object.assign(this.dom, this.listeners);
+        Object.keys(this.listeners).forEach(n => {
+            this.dom['on' + n] = this.listeners[n];
+        });
+    }
+
+    if(this.userData) {
+        this.dom.userData = {};
+        Object.assign(this.dom.userData, this.userData);
     }
 
     this.parent.appendChild(this.dom);
@@ -205,7 +284,7 @@ var dom = UI.create({
             'stroke-width': 2
         },
         listeners: {
-            onclick: () => {
+            click: () => {
                 alert('You clicked');
             }
         }
