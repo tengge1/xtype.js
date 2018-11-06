@@ -2,8 +2,6 @@
 
 渐进式开发框架xtype.js，使用js代替html，对svg同样适用。
 
-2018.11.06更新，`UI`改名`Manager`，新增多实例支持。
-
 ```javascript
 const UI = new Manager();
 const SVG = new Manager();
@@ -66,15 +64,28 @@ UI.addXType('customxtype', CustomControl);
 * listeners: 监听器，使用`Object.assign`给`dom`赋值，前面不带`on`。
 * userData: 自定义数据，使用`Object.assign`给`dom.userData`赋值。
 
-**渲染dom帮助函数**
-
-xtype.js提供了渲染dom帮助函数，方便渲染函数编写。
+**创建要素帮助函数**
 
 ```javascript
-/**
- * 渲染dom，将dom添加到父dom并给dom赋值，然后循环渲染子dom
- * @param {*} dom 
- */
+// html
+Control.prototype.createElement = function (tag) {
+    return document.createElement(tag);
+};
+
+// svg
+const xlinkNS = "http://www.w3.org/1999/xlink";
+
+SvgControl.prototype.createElement = function (tag) {
+    return document.createElementNS(svgNS, tag);
+};
+```
+
+**渲染dom帮助函数**
+
+xtype.js提供了渲染帮助函数，方便渲染函数编写。
+
+```javascript
+// html
 Control.prototype.renderDom = function (dom) {
     this.dom = dom;
     this.parent.appendChild(this.dom);
@@ -126,6 +137,57 @@ Control.prototype.renderDom = function (dom) {
         control.render();
     });
 };
+
+// svg
+const xlinkNS = "http://www.w3.org/1999/xlink";
+
+SvgControl.prototype.renderDom = function (dom) {
+    this.dom = dom;
+    this.parent.appendChild(this.dom);
+
+    if (this.attr) {
+        Object.keys(this.attr).forEach(n => {
+            if (n.startsWith('xlink')) {
+                this.dom.setAttributeNS(xlinkNS, n, this.attr[n]);
+            } else {
+                this.dom.setAttribute(n, this.attr[n]);
+            }
+        });
+    }
+
+    if (this.cls) {
+        this.dom.className = this.cls;
+    }
+
+    if (this.data) {
+        Object.assign(this.dom, this.data);
+    }
+
+    if (this.style) {
+        Object.assign(this.dom.style, this.style);
+    }
+
+    if (this.listeners) {
+        Object.keys(this.listeners).forEach(n => {
+            this.dom['on' + n] = this.listeners[n];
+        });
+    }
+
+    if (this.userData) {
+        this.dom.userData = {};
+        Object.assign(this.dom.userData, this.userData);
+    }
+
+    if (this.html) {
+        this.dom.innerHTML = this.html;
+    }
+
+    this.children.forEach(n => {
+        var control = this.manager.create(n);
+        control.parent = this.dom;
+        control.render();
+    });
+};
 ```
 
 自定义控件的渲染函数通常可写作：
@@ -172,7 +234,7 @@ Div.prototype = Object.create(XType.Control.prototype);
 Div.prototype.constructor = Div;
 
 Div.prototype.render = function () {
-    var dom = document.createElement('div');
+    var dom = this.createElement('div');
     this.renderDom(dom);
 };
 
@@ -206,14 +268,14 @@ var SVG = new XType.Manager();
 
 // SVG文档
 function SvgDom(options = {}) {
-    XType.Control.call(this, options);
+    XType.SvgControl.call(this, options);
 }
 
-SvgDom.prototype = Object.create(XType.Control.prototype);
+SvgDom.prototype = Object.create(XType.SvgControl.prototype);
 SvgDom.prototype.constructor = SvgDom;
 
 SvgDom.prototype.render = function () {
-    var dom = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    var dom = this.createElement('svg');
     this.renderDom(dom);
 };
 
@@ -221,14 +283,14 @@ SVG.addXType('dom', SvgDom);
 
 // SVG圆
 function SvgCircle(options = {}) {
-    XType.Control.call(this, options);
+    XType.SvgControl.call(this, options);
 }
 
-SvgCircle.prototype = Object.create(XType.Control.prototype);
+SvgCircle.prototype = Object.create(XType.SvgControl.prototype);
 SvgCircle.prototype.constructor = SvgCircle;
 
 SvgCircle.prototype.render = function () {
-    var dom = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    var dom = this.createElement('circle');
     this.renderDom(dom);
 };
 

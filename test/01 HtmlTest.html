@@ -23,7 +23,7 @@
         Div.prototype.constructor = Div;
 
         Div.prototype.render = function () {
-            var dom = document.createElement('div');
+            var dom = this.createElement('div');
             this.renderDom(dom);
         };
 

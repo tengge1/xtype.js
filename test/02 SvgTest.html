@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>01 HtmlTest</title>
+    <title>02 SvgTest</title>
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 </head>
 
@@ -16,14 +16,14 @@
 
         // SVG文档
         function SvgDom(options = {}) {
-            XType.Control.call(this, options);
+            XType.SvgControl.call(this, options);
         }
 
-        SvgDom.prototype = Object.create(XType.Control.prototype);
+        SvgDom.prototype = Object.create(XType.SvgControl.prototype);
         SvgDom.prototype.constructor = SvgDom;
 
         SvgDom.prototype.render = function () {
-            var dom = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            var dom = this.createElement('svg');
             this.renderDom(dom);
         };
 
@@ -31,14 +31,14 @@
 
         // SVG圆
         function SvgCircle(options = {}) {
-            XType.Control.call(this, options);
+            XType.SvgControl.call(this, options);
         }
 
-        SvgCircle.prototype = Object.create(XType.Control.prototype);
+        SvgCircle.prototype = Object.create(XType.SvgControl.prototype);
         SvgCircle.prototype.constructor = SvgCircle;
 
         SvgCircle.prototype.render = function () {
-            var dom = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            var dom = this.createElement('circle');
             this.renderDom(dom);
         };
 

@@ -99,16 +99,16 @@ Manager.prototype.create = function (config) {
 
     // config是json配置
     if (config == null || config.xtype == null) {
-        throw 'Manager: config is undefined.';
+        console.warn('Manager: config is undefined.');
     }
 
     if (config.xtype === undefined) {
-        throw 'Manager: config.xtype is undefined.';
+        console.warn('Manager: config.xtype is undefined.');
     }
 
     var cls = this.xtypes[config.xtype];
     if (cls == null) {
-        throw `Manager: xtype named ${config.xtype} is undefined.`;
+        console.warn(`Manager: xtype named ${config.xtype} is undefined.`);
     }
 
     var control = new cls(config);

@@ -92,6 +92,14 @@ Control.prototype.render = function () {
 };
 
 /**
+ * 创建元素
+ * @param {*} tag 标签
+ */
+Control.prototype.createElement = function (tag) {
+    return document.createElement(tag);
+};
+
+/**
  * 渲染dom，将dom添加到父dom并给dom赋值，然后循环渲染子dom
  * @param {*} dom 
  */

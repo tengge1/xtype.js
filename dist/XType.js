@@ -98,6 +98,14 @@
 	};
 
 	/**
+	 * 创建元素
+	 * @param {*} tag 标签
+	 */
+	Control.prototype.createElement = function (tag) {
+	    return document.createElement(tag);
+	};
+
+	/**
 	 * 渲染dom，将dom添加到父dom并给dom赋值，然后循环渲染子dom
 	 * @param {*} dom 
 	 */
@@ -206,6 +214,72 @@
 	    this.manager = null;
 	};
 
+	const svgNS = 'http://www.w3.org/2000/svg';
+	const xlinkNS = "http://www.w3.org/1999/xlink";
+
+	/**
+	 * SVG控件
+	 * @param {*} options 选项
+	 */
+	function SvgControl(options = {}) {
+	    Control.call(this, options);
+	}
+
+	SvgControl.prototype = Object.create(Control.prototype);
+	SvgControl.prototype.constructor = SvgControl;
+
+	SvgControl.prototype.createElement = function (tag) {
+	    return document.createElementNS(svgNS, tag);
+	};
+
+	SvgControl.prototype.renderDom = function (dom) {
+	    this.dom = dom;
+	    this.parent.appendChild(this.dom);
+
+	    if (this.attr) {
+	        Object.keys(this.attr).forEach(n => {
+	            if (n.startsWith('xlink')) {
+	                this.dom.setAttributeNS(xlinkNS, n, this.attr[n]);
+	            } else {
+	                this.dom.setAttribute(n, this.attr[n]);
+	            }
+	        });
+	    }
+
+	    if (this.cls) {
+	        this.dom.className = this.cls;
+	    }
+
+	    if (this.data) {
+	        Object.assign(this.dom, this.data);
+	    }
+
+	    if (this.style) {
+	        Object.assign(this.dom.style, this.style);
+	    }
+
+	    if (this.listeners) {
+	        Object.keys(this.listeners).forEach(n => {
+	            this.dom['on' + n] = this.listeners[n];
+	        });
+	    }
+
+	    if (this.userData) {
+	        this.dom.userData = {};
+	        Object.assign(this.dom.userData, this.userData);
+	    }
+
+	    if (this.html) {
+	        this.dom.innerHTML = this.html;
+	    }
+
+	    this.children.forEach(n => {
+	        var control = this.manager.create(n);
+	        control.parent = this.dom;
+	        control.render();
+	    });
+	};
+
 	/**
 	 * Manager类
 	 * @author tengge / https://github.com/tengge1
@@ -305,16 +379,16 @@
 
 	    // config是json配置
 	    if (config == null || config.xtype == null) {
-	        throw 'Manager: config is undefined.';
+	        console.warn('Manager: config is undefined.');
 	    }
 
 	    if (config.xtype === undefined) {
-	        throw 'Manager: config.xtype is undefined.';
+	        console.warn('Manager: config.xtype is undefined.');
 	    }
 
 	    var cls = this.xtypes[config.xtype];
 	    if (cls == null) {
-	        throw `Manager: xtype named ${config.xtype} is undefined.`;
+	        console.warn(`Manager: xtype named ${config.xtype} is undefined.`);
 	    }
 
 	    var control = new cls(config);
@@ -325,6 +399,7 @@
 	};
 
 	exports.Control = Control;
+	exports.SvgControl = SvgControl;
 	exports.Manager = Manager;
 
 	Object.defineProperty(exports, '__esModule', { value: true });
