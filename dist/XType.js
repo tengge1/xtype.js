@@ -26,7 +26,7 @@
 	    this.listeners = options.listeners || null; // 监听器
 	    this.userData = options.userData || null; // 自定义数据
 
-	    window.UI.add(this._id, this, this._scope);
+	    this.manager = null; // Manager.create时自动赋值
 	}
 
 	Object.defineProperties(Control.prototype, {
@@ -81,6 +81,7 @@
 	Control.prototype.remove = function (obj) {
 	    var index = this.children.indexOf(obj);
 	    if (index > -1) {
+	        this.children[index].manager = null;
 	        this.children.splice(index, 1);
 	    }
 	};
@@ -90,7 +91,7 @@
 	 */
 	Control.prototype.render = function () {
 	    this.children.forEach(n => {
-	        var obj = window.UI.create(n);
+	        var obj = this.manager.create(n);
 	        obj.parent = this.parent;
 	        obj.render();
 	    });
@@ -146,7 +147,7 @@
 
 	    // 渲染子节点
 	    this.children.forEach(n => {
-	        var control = window.UI.create(n);
+	        var control = this.manager.create(n);
 	        control.parent = this.dom;
 	        control.render();
 	    });
@@ -163,7 +164,7 @@
 
 	        items.forEach(n => {
 	            if (n.id) {
-	                window.UI.remove(n.id, n.scope);
+	                this.manager.remove(n.id, n.scope);
 	            }
 	            if (n.listeners) {
 	                Object.keys(n.listeners).forEach(m => {
@@ -200,15 +201,16 @@
 	        this.parent = null;
 	    }
 	    if (this.id) {
-	        window.UI.remove(this._id, this._scope);
+	        this.manager.remove(this._id, this._scope);
 	    }
+	    this.manager = null;
 	};
 
 	/**
-	 * UI类
+	 * Manager类
 	 * @author tengge / https://github.com/tengge1
 	 */
-	function UICls() {
+	function Manager() {
 	    this.xtypes = {};
 	    this.objects = {};
 	}
@@ -218,11 +220,11 @@
 	 * @param {*} name xtype字符串
 	 * @param {*} cls xtype对应类
 	 */
-	UICls.prototype.addXType = function (name, cls) {
+	Manager.prototype.addXType = function (name, cls) {
 	    if (this.xtypes[name] === undefined) {
 	        this.xtypes[name] = cls;
 	    } else {
-	        console.warn(`UICls: xtype named ${name} has already been added.`);
+	        console.warn(`Manager: xtype named ${name} has already been added.`);
 	    }
 	};
 
@@ -230,11 +232,11 @@
 	 * 删除xtype
 	 * @param {*} name xtype字符串
 	 */
-	UICls.prototype.removeXType = function (name) {
+	Manager.prototype.removeXType = function (name) {
 	    if (this.xtypes[name] !== undefined) {
 	        delete this.xtypes[name];
 	    } else {
-	        console.warn(`UICls: xtype named ${name} is not defined.`);
+	        console.warn(`Manager: xtype named ${name} is not defined.`);
 	    }
 	};
 
@@ -242,9 +244,9 @@
 	 * 获取xtype
 	 * @param {*} name xtype字符串
 	 */
-	UICls.prototype.getXType = function (name) {
+	Manager.prototype.getXType = function (name) {
 	    if (this.xtypes[name] === undefined) {
-	        console.warn(`UICls: xtype named ${name} is not defined.`);
+	        console.warn(`Manager: xtype named ${name} is not defined.`);
 	    }
 	    return this.xtypes[name];
 	};
@@ -255,11 +257,13 @@
 	 * @param {*} obj 对象
 	 * @param {*} scope 对象作用域（默认为global）
 	 */
-	UICls.prototype.add = function (id, obj, scope = "global") {
+	Manager.prototype.add = function (id, obj, scope = "global") {
 	    var key = `${scope}:${id}`;
 	    if (this.objects[key] !== undefined) {
-	        console.warn(`UICls: object named ${id} has already been added.`);
+	        console.warn(`Manager: object named ${id} has already been added.`);
 	    }
+
+	    obj.manager = this;
 	    this.objects[key] = obj;
 	};
 
@@ -268,12 +272,13 @@
 	 * @param {*} id 对象id
 	 * @param {*} scope 对象作用域（默认为global）
 	 */
-	UICls.prototype.remove = function (id, scope = 'global') {
+	Manager.prototype.remove = function (id, scope = 'global') {
 	    var key = `${scope}:${id}`;
 	    if (this.objects[key] != undefined) {
+	        this.objects[key].manager = null;
 	        delete this.objects[key];
 	    } else {
-	        console.warn(`UICls: object named ${id} is not defined.`);
+	        console.warn(`Manager: object named ${id} is not defined.`);
 	    }
 	};
 
@@ -282,46 +287,45 @@
 	 * @param {*} id 控件id
 	 * @param {*} scope 对象作用域（默认为global）
 	 */
-	UICls.prototype.get = function (id, scope = 'global') {
+	Manager.prototype.get = function (id, scope = 'global') {
 	    var key = `${scope}:${id}`;
 	    return this.objects[key];
 	};
 
 	/**
-	 * 通过json配置创建UI实例，并自动将包含id的控件添加到缓存
+	 * 通过json配置创建Control实例，并自动将包含id的控件添加到缓存
 	 * @param {*} config xtype配置
 	 */
-	UICls.prototype.create = function (config) {
+	Manager.prototype.create = function (config) {
 	    if (config instanceof Control) { // config是Control实例
+
+	        this.add(config.id, this, config.scope);
 	        return config;
 	    }
 
 	    // config是json配置
 	    if (config == null || config.xtype == null) {
-	        throw 'UICls: config is undefined.';
+	        throw 'Manager: config is undefined.';
 	    }
 
 	    if (config.xtype === undefined) {
-	        throw 'UICls: config.xtype is undefined.';
+	        throw 'Manager: config.xtype is undefined.';
 	    }
 
 	    var cls = this.xtypes[config.xtype];
 	    if (cls == null) {
-	        throw `UICls: xtype named ${config.xtype} is undefined.`;
+	        throw `Manager: xtype named ${config.xtype} is undefined.`;
 	    }
 
-	    return new cls(config);
+	    var control = new cls(config);
+
+	    this.add(control.id, control, control.scope);
+
+	    return control;
 	};
 
-	/**
-	 * UICls
-	 */
-	const UI = new UICls();
-
-	window.UI = UI;
-
 	exports.Control = Control;
-	exports.UI = UI;
+	exports.Manager = Manager;
 
 	Object.defineProperty(exports, '__esModule', { value: true });
 

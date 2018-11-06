@@ -1,2 +1,2 @@
 export { default as Control } from './Control';
-export { default as UI } from './UI';
+export { default as Manager } from './Manager';

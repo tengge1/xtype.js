@@ -20,7 +20,7 @@ function Control(options = {}) {
     this.listeners = options.listeners || null; // 监听器
     this.userData = options.userData || null; // 自定义数据
 
-    window.UI.add(this._id, this, this._scope);
+    this.manager = null; // Manager.create时自动赋值
 }
 
 Object.defineProperties(Control.prototype, {
@@ -75,6 +75,7 @@ Control.prototype.insert = function (index, obj) {
 Control.prototype.remove = function (obj) {
     var index = this.children.indexOf(obj);
     if (index > -1) {
+        this.children[index].manager = null;
         this.children.splice(index, 1);
     }
 };
@@ -84,7 +85,7 @@ Control.prototype.remove = function (obj) {
  */
 Control.prototype.render = function () {
     this.children.forEach(n => {
-        var obj = window.UI.create(n);
+        var obj = this.manager.create(n);
         obj.parent = this.parent;
         obj.render();
     });
@@ -140,7 +141,7 @@ Control.prototype.renderDom = function (dom) {
 
     // 渲染子节点
     this.children.forEach(n => {
-        var control = window.UI.create(n);
+        var control = this.manager.create(n);
         control.parent = this.dom;
         control.render();
     });
@@ -157,7 +158,7 @@ Control.prototype.clear = function () {
 
         items.forEach(n => {
             if (n.id) {
-                window.UI.remove(n.id, n.scope);
+                this.manager.remove(n.id, n.scope);
             }
             if (n.listeners) {
                 Object.keys(n.listeners).forEach(m => {
@@ -194,8 +195,9 @@ Control.prototype.destroy = function () {
         this.parent = null;
     }
     if (this.id) {
-        window.UI.remove(this._id, this._scope);
+        this.manager.remove(this._id, this._scope);
     }
+    this.manager = null;
 };
 
 export default Control;

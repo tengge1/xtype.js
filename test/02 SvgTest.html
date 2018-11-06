@@ -11,6 +11,9 @@
 <body>
     <script src="../dist/XType.js"></script>
     <script>
+        // 创建管理器
+        var SVG = new XType.Manager();
+
         // SVG文档
         function SvgDom(options = {}) {
             XType.Control.call(this, options);
@@ -24,7 +27,7 @@
             this.renderDom(dom);
         };
 
-        UI.addXType('dom', SvgDom);
+        SVG.addXType('dom', SvgDom);
 
         // SVG圆
         function SvgCircle(options = {}) {
@@ -39,10 +42,10 @@
             this.renderDom(dom);
         };
 
-        UI.addXType('circle', SvgCircle);
+        SVG.addXType('circle', SvgCircle);
 
         // 渲染svg文档
-        var dom = UI.create({
+        var dom = SVG.create({
             xtype: 'dom',
             id: 'dom1',
             attr: {

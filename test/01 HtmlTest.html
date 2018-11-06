@@ -11,6 +11,9 @@
 <body>
     <script src="../dist/XType.js"></script>
     <script>
+        // 创建管理器
+        var UI = new XType.Manager();
+
         // 自定义控件
         function Div(options = {}) {
             XType.Control.call(this, options);

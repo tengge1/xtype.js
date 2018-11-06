@@ -2,6 +2,13 @@
 
 渐进式开发框架xtype.js，使用js代替html，对svg同样适用。
 
+2018.11.06更新，`UI`改名`Manager`，新增多实例支持。
+
+```javascript
+const UI = new Manager();
+const SVG = new Manager();
+```
+
 ## 原理
 
 通过js创建dom，并将属性、数据、样式和事件赋值给dom。
@@ -130,29 +137,32 @@ CustomControl.prototype.render = function () {
 };
 ```
 
-### XType.UI
+### XType.Manager
 
-`UI`：用于xtype注册、控件的创建和管理。
+`Manager`：用于xtype注册、控件的创建和管理。
 
-`UI.addXType(name, cls)`：将控件类型注册为xtype，例如`UI.addXType('html', Html)`。
+`Manager.addXType(name, cls)`：将控件类型注册为xtype，例如`Manager.addXType('html', Html)`。
 
-`UI.removeXType(name)`：移除控件xtype。
+`Manager.removeXType(name)`：移除控件xtype。
 
-`UI.getXType(name)`：通过xtype获取控件类型
+`Manager.getXType(name)`：通过xtype获取控件类型
 
-`UI.add(id, obj, scope = "global");`：添加控件实例，global是命名空间。
+`Manager.add(id, obj, scope = "global");`：添加控件实例，global是命名空间。
 
-`UI.remove(id, scope = 'global');`：移除控件实例。
+`Manager.remove(id, scope = 'global');`：移除控件实例。
 
-`UI.get(id, scope = 'global')`：通过id和命名空间获取控件实例。
+`Manager.get(id, scope = 'global')`：通过id和命名空间获取控件实例。
 
-`UI.create(config)`：通过json对象创建页面，json中的元素可以是带xtype的对象或控件实例。xtype必须事先注册。
+`Manager.create(config)`：通过json对象创建页面，json中的元素可以是带xtype的对象或控件实例。xtype必须事先注册。
 
 ## 示例
 
 **html示例**
 
 ```javascript
+// 创建管理器
+var UI = new XType.Manager();
+
 // 自定义控件
 function Div(options = {}) {
     XType.Control.call(this, options);
@@ -191,6 +201,9 @@ control.render();
 **svg示例**
 
 ```javascript
+// 创建管理器
+var SVG = new XType.Manager();
+
 // SVG文档
 function SvgDom(options = {}) {
     XType.Control.call(this, options);
@@ -204,7 +217,7 @@ SvgDom.prototype.render = function () {
     this.renderDom(dom);
 };
 
-UI.addXType('dom', SvgDom);
+SVG.addXType('dom', SvgDom);
 
 // SVG圆
 function SvgCircle(options = {}) {
@@ -219,10 +232,10 @@ SvgCircle.prototype.render = function () {
     this.renderDom(dom);
 };
 
-UI.addXType('circle', SvgCircle);
+SVG.addXType('circle', SvgCircle);
 
 // 渲染svg文档
-var dom = UI.create({
+var dom = SVG.create({
     xtype: 'dom',
     id: 'dom1',
     attr: {
@@ -247,6 +260,7 @@ var dom = UI.create({
         }
     }]
 });
+
 dom.render();
 ```
 
