@@ -194,8 +194,7 @@ SvgControl.prototype.renderDom = function (dom) {
 
 ```javascript
 CustomControl.prototype.render = function () {
-    var dom = document.createElement('div'); // div可以换成任何tag
-    this.renderDom(dom);
+    this.renderDom(this.createElement('div')); // div可以换成任何tag
 };
 ```
 
