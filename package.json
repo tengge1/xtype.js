@@ -1,7 +1,7 @@
 {
     "name": "@tengge1/xtype.js",
-    "version": "3.0.0",
-    "description": "",
+    "version": "3.0.1",
+    "description": "渐进式开发框架xtype.js，使用js代替html，对svg同样适用。",
     "dependencies": {},
     "devDependencies": {
         "rollup": "^0.59.2"
