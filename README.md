@@ -9,7 +9,7 @@ const SVG = new Manager();
 
 ## 原理
 
-通过js创建dom，并将属性、数据、样式和事件赋值给dom。
+通过js创建dom，并将属性、样式和事件赋值给dom。
 
 xtype.js并未实现任何属性或事件，仅提供xtype和控件实例管理。
 
@@ -58,11 +58,11 @@ UI.addXType('customxtype', CustomControl);
 * children: 子元素列表。子元素可为xtype对象或控件。
 * html: `dom`的`innerHTML`属性。如果同时存在`children`属性，优先使用`children`。
 * attr: 属性，通过`setAttribute`给`dom`赋值。
+* prop: `dom`属性，通过`Object.assign`给`dom`赋值。
 * cls: `dom`的`class`属性。
-* data: `dom`数据，通过`Object.assign`给`dom`赋值。
 * style: `dom`样式，使用`Object.assign`给`dom.style`赋值。
 * listeners: 监听器，使用`Object.assign`给`dom`赋值，前面不带`on`。
-* userData: 自定义数据，使用`Object.assign`给`dom.userData`赋值。
+* data: 自定义数据，使用`Object.assign`给`dom.data`赋值。
 
 **创建要素帮助函数**
 
@@ -97,14 +97,14 @@ Control.prototype.renderDom = function (dom) {
         });
     }
 
+    // 属性，直接赋值给dom
+    if (this.prop) {
+        Object.assign(this.dom, this.prop);
+    }
+
     // class属性
     if (this.cls) {
         this.dom.className = this.cls;
-    }
-
-    // 数据，直接赋值给dom
-    if (this.data) {
-        Object.assign(this.dom, this.data);
     }
 
     // 样式，赋值给dom.style
@@ -119,10 +119,10 @@ Control.prototype.renderDom = function (dom) {
         });
     }
 
-    // 自定义数据，赋值给dom.userData
-    if (this.userData) {
-        this.dom.userData = {};
-        Object.assign(this.dom.userData, this.userData);
+    // 自定义数据，赋值给dom.data
+    if (this.data) {
+        this.dom.data = {};
+        Object.assign(this.dom.data, this.data);
     }
 
     // innerHTML属性
@@ -155,12 +155,12 @@ SvgControl.prototype.renderDom = function (dom) {
         });
     }
 
-    if (this.cls) {
-        this.dom.className = this.cls;
+    if (this.prop) {
+        Object.assign(this.dom, this.prop);
     }
 
-    if (this.data) {
-        Object.assign(this.dom, this.data);
+    if (this.cls) {
+        this.dom.className = this.cls;
     }
 
     if (this.style) {
@@ -173,9 +173,9 @@ SvgControl.prototype.renderDom = function (dom) {
         });
     }
 
-    if (this.userData) {
-        this.dom.userData = {};
-        Object.assign(this.dom.userData, this.userData);
+    if (this.data) {
+        this.dom.data = {};
+        Object.assign(this.dom.data, this.data);
     }
 
     if (this.html) {

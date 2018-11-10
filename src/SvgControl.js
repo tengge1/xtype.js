@@ -32,12 +32,12 @@ SvgControl.prototype.renderDom = function (dom) {
         });
     }
 
-    if (this.cls) {
-        this.dom.className = this.cls;
+    if (this.prop) {
+        Object.assign(this.dom, this.prop);
     }
 
-    if (this.data) {
-        Object.assign(this.dom, this.data);
+    if (this.cls) {
+        this.dom.className = this.cls;
     }
 
     if (this.style) {
@@ -50,9 +50,9 @@ SvgControl.prototype.renderDom = function (dom) {
         });
     }
 
-    if (this.userData) {
-        this.dom.userData = {};
-        Object.assign(this.dom.userData, this.userData);
+    if (this.data) {
+        this.dom.data = {};
+        Object.assign(this.dom.data, this.data);
     }
 
     if (this.html) {
